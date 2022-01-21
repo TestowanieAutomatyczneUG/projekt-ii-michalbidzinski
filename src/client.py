@@ -6,8 +6,8 @@ class Client:
         self.update = "https:/client.pl/update"
         self.delete = "https:/client.pl/update"
     def add_client(self,id, firstname, surname, email,born):
-        if type(id) is not int:
-            raise ValueError("id is not an int")
+        if type(id) is not str:
+            raise ValueError("id is not an str")
         if type(firstname) is not str:
             raise ValueError("firstname is not a string")
         if type(surname) is not str:
@@ -23,5 +23,16 @@ class Client:
             return response.json
         if response.status_code == 400:
             return 'Client of this id already exists'
+        else:
+            return 'Server error'
+
+    def delete_client(self, id):
+        if not isinstance(id, str):
+            raise ValueError("id must be type of str")
+        response = requests.delete(self.delete, data={'id': id})
+        if 200 <= response.status_code <= 299:
+            return response.json
+        if response.status_code == 404:
+            return 'Such a client does not exists'
         else:
             return 'Server error'
