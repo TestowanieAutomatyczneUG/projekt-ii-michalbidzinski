@@ -24,13 +24,17 @@ class TestMainClient(unittest.TestCase):
             assert self.client.add_client("2", "Michal", "Bidz", "mbidz@example.com",
                                           "2001") == post_mock.return_value.json
 
-
-
     @patch.object(requests, 'post')
     def test_add_client_existing_eror(self, post_mock):
         post_mock.return_value.status_code = 400
         assert_that(self.client.add_client("1", "Michal", "Bidz", "mbidz@example.com",
-                                      "2001")).is_equal_to("Client of this id already exists")
+                                           "2001")).is_equal_to("Client of this id already exists")
+
+    def test_add_client_existing_eror2(self):
+        with patch.object(requests, 'post') as post_mock:
+            post_mock.return_value.status_code = 400
+            assert_that(self.client.add_client("1", "Michal", "Bidz", "mbidz@example.com",
+                                               "2001")).is_equal_to("Client of this id already exists")
 
     def test_add_new_client_int(self):
         assert_that(self.client.add_client).raises(ValueError).when_called_with(1, 2, 3, 4, 5)
@@ -65,3 +69,20 @@ class TestMainClient(unittest.TestCase):
             mock_delete.return_value.status_code = 201
             mock_delete.return_value.json = {"deleted": id}
             assert self.client.delete_client(id) == mock_delete.return_value.json
+
+    def test_delete_client_wrong_int_id_type(self):
+        assert_that(self.client.delete_client).raises(ValueError).when_called_with(1)
+
+    def test_delete_client_wrong_flot_id_type(self):
+        assert_that(self.client.delete_client).raises(ValueError).when_called_with(1.23)
+
+    def test_delete_client_wrong_array_id_type(self):
+        assert_that(self.client.delete_client).raises(ValueError).when_called_with([])
+
+    def test_delete_client_not_existing(self):
+        self.client.delete_client = MagicMock(
+            return_value=400)
+        response = self.client.delete_client("3")
+        assert_that(response).is_equal_to(400)
+
+ 
