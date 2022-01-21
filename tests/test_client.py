@@ -85,4 +85,11 @@ class TestMainClient(unittest.TestCase):
         response = self.client.delete_client("3")
         assert_that(response).is_equal_to(400)
 
- 
+    def test_delete_client_not_existing_2(self):
+        self.client.delete_client = MagicMock(
+            return_value=400)
+        self.client.delete_client("3")
+        self.client.delete_client.assert_called_with("3")
+
+
+
