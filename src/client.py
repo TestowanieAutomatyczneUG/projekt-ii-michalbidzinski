@@ -4,7 +4,7 @@ class Client:
         self.create = "https://client.pl/add"
         self.read = "https:/client.pl/get"
         self.update = "https:/client.pl/update"
-        self.delete = "https:/client.pl/update"
+        self.delete = "https:/client.pl/delete"
     def add_client(self,id, firstname, surname, email,born):
         if type(id) is not str:
             raise ValueError("id is not an str")

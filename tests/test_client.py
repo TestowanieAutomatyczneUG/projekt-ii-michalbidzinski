@@ -82,14 +82,16 @@ class TestMainClient(unittest.TestCase):
     def test_delete_client_not_existing(self):
         self.client.delete_client = MagicMock(
             return_value=400)
-        response = self.client.delete_client("3")
+        response = self.client.delete_client("777")
         assert_that(response).is_equal_to(400)
 
     def test_delete_client_not_existing_2(self):
         self.client.delete_client = MagicMock(
             return_value=400)
-        self.client.delete_client("3")
-        self.client.delete_client.assert_called_with("3")
-
-
-
+        self.client.delete_client("777")
+        self.client.delete_client.assert_called_with("777")
+    def test_delete_client_connection_error(self):
+        self.client.delete_client = MagicMock(side_effect=ConnectionError(
+            ))
+        assert_that(self.client.delete_client).raises(
+            ConnectionError).when_called_with("1")
