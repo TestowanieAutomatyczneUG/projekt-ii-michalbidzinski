@@ -36,3 +36,13 @@ class Client:
             return 'Such a client does not exists'
         else:
             return 'Server error'
+    def get_client(self, id):
+        if type(id) is not str:
+            raise TypeError('id is not a str')
+        response = requests.get(self.read + '/' + id)
+        if 200 <= response.status_code <= 299:
+            return response.json
+        if response.status_code == 404:
+            return 'Such a client does not exists'
+        else:
+            return 'Server error'
