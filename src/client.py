@@ -36,7 +36,7 @@ class Client:
             return 'Such a client does not exists'
         else:
             return 'Server error'
-    def get_client(self, id):
+    def get_client_info(self, id):
         if type(id) is not str:
             raise TypeError('id is not a str')
         response = requests.get(self.read + '/' + id)

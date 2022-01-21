@@ -90,8 +90,17 @@ class TestMainClient(unittest.TestCase):
             return_value=400)
         self.client.delete_client("777")
         self.client.delete_client.assert_called_with("777")
+
     def test_delete_client_connection_error(self):
         self.client.delete_client = MagicMock(side_effect=ConnectionError(
-            ))
+        ))
         assert_that(self.client.delete_client).raises(
             ConnectionError).when_called_with("1")
+
+    def test_get_client_info_with_specified_id(self):
+        id = "1"
+        self.client.get_client_info = Mock()
+        self.client.get_client_info.return_value = {'id': id, 'firstname': 'Michal', 'surname': 'Bidz',
+                                                    'email': 'michalbidz@example.com', 'born': '2001'}
+        response = self.client.get_client_info(id)
+        self.assertEqual(response['firstname'], 'Michal')
