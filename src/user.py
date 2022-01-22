@@ -1,12 +1,12 @@
 import requests
-class Client:
+class User:
     def __init__(self):
-        self.url = "https://client.pl/"
-        self.create = "https://client.pl/add"
-        self.read = "https:/client.pl/get"
-        self.update = "https:/client.pl/update"
-        self.delete = "https:/client.pl/delete"
-    def add_client(self,id, firstname, surname, email,born):
+        self.url = "https://users.pl/"
+        self.create = "https://users.pl/add"
+        self.read = "https:/users.pl/get"
+        self.update = "https:/users.pl/update"
+        self.delete = "https:/users.pl/delete"
+    def add_user(self,id, firstname, surname, email,born):
         if type(id) is not str:
             raise ValueError("id is not an str")
         if type(firstname) is not str:
@@ -27,7 +27,7 @@ class Client:
         else:
             return 'Server error'
 
-    def delete_client(self, id):
+    def delete_user(self, id):
         if not isinstance(id, str):
             raise ValueError("id must be type of str")
         response = requests.delete(self.delete, data={'id': id})
@@ -37,7 +37,7 @@ class Client:
             return 'Such a client does not exists'
         else:
             return 'Server error'
-    def get_client_info(self, id):
+    def get_user_info(self, id):
         if type(id) is not str:
             raise TypeError('id is not a str')
         response = requests.get(self.read + '/' + id)
@@ -48,6 +48,28 @@ class Client:
         else:
             return 'Server error'
 
-    def get_all_clients(self):
+    def get_all_users(self):
         response = requests.get(self.url)
         return response
+
+    def update_users(self, id, firstname, surname, email,born):
+        if type(id) is not str:
+            raise ValueError("id is not an str")
+        if type(firstname) is not str:
+            raise ValueError("firstname is not a string")
+        if type(surname) is not str:
+            raise ValueError("surname is not a string")
+        if type(email) is not str:
+            raise ValueError("email is not a string")
+        if type(born) is not str:
+            raise ValueError("born year is not a string")
+        response = requests.put(self.update + '/' + id,
+                                data={ 'firstname': firstname, 'surname': surname, 'email': email,
+                                      'born': born})
+        if 200 <= response.status_code <= 299:
+            return response.json
+        if response.status_code == 404:
+            return 'Some error'
+
+        else:
+            return 'Server error'
