@@ -210,11 +210,16 @@ class TestMainUser(unittest.TestCase):
             '2', 'mk', 'lqq', 'example@com.pl', '2001')
 
     @patch('src.user.requests.put')
-    def test_update_client_mock_called(self, mock_put):
-        request_mock(mock_put, FakeMock(200, {'id': 1}))
+    def test_update_client_mock_called(self, put_mock):
+        request_mock(put_mock, FakeMock(200, {'id': 1}))
         self.temp.update_users( '2', 'mk', 'lqq', 'example@com.pl', '2001')
-        mock_put.assert_called_once()
+        put_mock.assert_called_once()
 
+    @patch('src.user.requests.put')
+    def test_update_client(self, put_mock):
+        request_mock(put_mock, FakeMock(200, {'id': '1'}))
+        response = self.temp.update_users( '1', 'mk', 'lqq', 'example@com.pl', '2001')
+        assert_that(response['id']).is_equal_to('1')
 
 class FakeMock(object):
     def __init__(self, status_code, json=None, error_message=None):
