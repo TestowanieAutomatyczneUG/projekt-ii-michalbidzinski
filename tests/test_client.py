@@ -106,12 +106,16 @@ class TestMainClient(unittest.TestCase):
         self.assertEqual(response['firstname'], 'Michal')
 
     @patch.object(requests, 'get')
-    def test_get_client_which_does_not_exisit_in_database(self, get_mock):
+    def test_get_client_info_which_does_not_exisit_in_database(self, get_mock):
         get_mock.return_value.status_code = 404
         response = self.client.get_client_info('2')
         self.assertEqual(response, 'Such a client does not exists')
     @patch.object(requests, 'get')
-    def test_get_client_server_error(self, get_mock):
+    def test_get_client_info_server_error(self, get_mock):
         get_mock.return_value.status_code = 400
         response = self.client.get_client_info('2')
         self.assertEqual(response, 'Server error')
+
+    def test_get_client_info_invalid_id_float(self):
+        assert_that(self.client.get_client_info).raises(
+            TypeError).when_called_with(5.3)
