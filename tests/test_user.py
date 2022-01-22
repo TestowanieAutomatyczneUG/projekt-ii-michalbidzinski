@@ -250,6 +250,11 @@ class TestMainUser(unittest.TestCase):
         response = self.temp.get_user_info('3')
         self.assertEqual(response, 'Such a client does not exists')
 
+    @patch('src.user.requests.delete')
+    def test_delete_existing_user_fake_mock(self, delete_mock):
+        request_mock(delete_mock, FakeMock(200, {'id': '1'}))
+        self.temp.delete_user('1')
+        delete_mock.assert_called_once()
 
 
 
