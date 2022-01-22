@@ -238,6 +238,26 @@ class TestMainUser(unittest.TestCase):
         response = self.temp.update_users('1', 'mk', 'lqq', 'example@com.pl', '2001')
         assert_that(response).contains('error')
 
+    @patch('src.user.requests.post')
+    def test_add_user_fake(self, post_mock):
+        request_mock(post_mock, FakeMock(201, {'id': 1}))
+        self.temp.add_user('1', 'mk', 'lqq', 'example@com.pl', '2001')
+        post_mock.assert_called_once()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 class FakeMock(object):
     def __init__(self, status_code, json=None):
         self.status_code = status_code
