@@ -1,11 +1,11 @@
 import requests
 class User:
     def __init__(self):
-        self.url = "https://users.pl/"
-        self.create = "https://users.pl/add"
-        self.read = "https:/users.pl/get"
-        self.update = "https:/users.pl/update"
-        self.delete = "https:/users.pl/delete"
+        self.url = "https://fakestoreapi.com/"
+        self.create = "https://fakestoreapi.com/add"
+        self.read = "https://fakestoreapi.com/get"
+        self.update = "https://fakestoreapi.com/update"
+        self.delete = "https://fakestoreapi.com/delete"
     def add_user(self,id, firstname, surname, email,born):
         if type(id) is not str:
             raise ValueError("id is not an str")

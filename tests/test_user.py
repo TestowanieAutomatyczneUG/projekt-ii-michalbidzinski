@@ -5,9 +5,11 @@ from unittest.mock import *
 from src.user import User
 import json
 
+def request_mock(mockk, response):
+    mockk.return_value = Mock(ok=True)
+    mockk.return_value = response
 
-# id, firstname, surname, email, born
-class TestMainClient(unittest.TestCase):
+class TestMainUser(unittest.TestCase):
     def setUp(self):
         self.temp = User()
 
@@ -26,6 +28,12 @@ class TestMainClient(unittest.TestCase):
 
     @patch.object(requests, 'post')
     def test_add_user_existing_eror(self, post_mock):
+        post_mock.return_value.status_code = 400
+        assert_that(self.temp.add_user("1", "Michal", "Bidz", "mbidz@example.com",
+                                       "2001")).is_equal_to("Client of this id already exists")
+
+    @patch.object(requests, 'post', autospec=True)
+    def test_add_user_existing_eror_autospec(self, post_mock):
         post_mock.return_value.status_code = 400
         assert_that(self.temp.add_user("1", "Michal", "Bidz", "mbidz@example.com",
                                        "2001")).is_equal_to("Client of this id already exists")
@@ -80,21 +88,21 @@ class TestMainClient(unittest.TestCase):
         assert_that(self.temp.delete_user).raises(ValueError).when_called_with([])
 
     def test_delete_user_not_existing(self):
-        self.temp.delete_client = MagicMock(
+        self.temp.delete_user = MagicMock(
             return_value=400)
-        response = self.temp.delete_client("777")
+        response = self.temp.delete_user("777")
         assert_that(response).is_equal_to(400)
 
     def test_delete_user_not_existing_2(self):
-        self.temp.delete_client = MagicMock(
+        self.temp.delete_user = MagicMock(
             return_value=400)
-        self.temp.delete_client("777")
-        self.temp.delete_client.assert_called_with("777")
+        self.temp.delete_user("777")
+        self.temp.delete_user.assert_called_with("777")
 
     def test_delete_user_connection_error(self):
-        self.temp.delete_client = MagicMock(side_effect=ConnectionError(
+        self.temp.delete_user = MagicMock(side_effect=ConnectionError(
         ))
-        assert_that(self.temp.delete_client).raises(
+        assert_that(self.temp.delete_user).raises(
             ConnectionError).when_called_with("1")
 
     def test_get_user_info_with_specified_id(self):
@@ -134,9 +142,15 @@ class TestMainClient(unittest.TestCase):
             TypeError).when_called_with({})
 
     def test_get_user_info_connection_error(self):
-        self.temp.get_client = Mock(side_effect=ConnectionError)
-        assert_that(self.temp.get_client).raises(
+        self.temp.get_user_info = Mock(side_effect=ConnectionError)
+        assert_that(self.temp.get_user_info).raises(
             ConnectionError).when_called_with('3')
+
+    def test_get_user_no_such_id(self):
+        self.temp.get_user_info = MagicMock(
+            return_value=404)
+        self.temp.get_user_info("777")
+        self.temp.get_user_info.assert_called_with("777")
 
     def test_get_all_users(self):
         self.temp.get_all_users = Mock()
@@ -160,14 +174,16 @@ class TestMainClient(unittest.TestCase):
               'born': '2001'
               }])
         response = self.temp.get_all_users()
-        self.assertEqual(response[1], {'email': 'mich@gmail.com', 'id': '2', 'name': 'Jarek', 'surname': 'Pasha', 'born': '2001'})
+        self.assertEqual(response[1],
+                         {'email': 'mich@gmail.com', 'id': '2', 'name': 'Jarek', 'surname': 'Pasha', 'born': '2001'})
 
     def test_update_user_eror_with_wrong_id(self):
         assert_that(self.temp.update_users).raises(ValueError).when_called_with(11.23, 'pepsi',
-                                                                                     'cola', '23@example.com', '2001')
+                                                                                'cola', '23@example.com', '2001')
+
     def test_update_user_eror_with_wrong_name(self):
         assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', [],
-                                                                                     'cola', '23@example.com', '2001')
+                                                                                'cola', '23@example.com', '2001')
 
     def test_update_user_eror_with_wrong_surname(self):
         assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', 'pepsi',
@@ -179,4 +195,29 @@ class TestMainClient(unittest.TestCase):
 
     def test_update_user_eror_with_wrong_born_year(self):
         assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', 'pepsi',
-                                                                                'cola',"23213@example.com", 2001)
+                                                                                'cola', "23213@example.com", 2001)
+
+    def test_update_user(self):
+        self.temp.update_users = Mock()
+        self.temp.update_users.return_value = 'Some error'
+        response = self.temp.update_users('2', 'mk', 'lqq', 'example@com.pl', '2001')
+        assert_that(response).is_equal_to('Some error')
+
+    def test_updatE_user_connection_error(self):
+        self.temp.update_users = Mock(side_effect=ConnectionError)
+        assert_that(self.temp.update_users).raises(
+            ConnectionError).when_called_with(
+            '2', 'mk', 'lqq', 'example@com.pl', '2001')
+
+    @patch('src.user.requests.put')
+    def test_update_client_mock_called(self, mock_put):
+        request_mock(mock_put, FakeMock(200, {'id': 1}))
+        self.temp.update_users( '2', 'mk', 'lqq', 'example@com.pl', '2001')
+        mock_put.assert_called_once()
+
+
+class FakeMock(object):
+    def __init__(self, status_code, json=None, error_message=None):
+        self.status_code = status_code
+        self.json = json
+        self.error_message = error_message
