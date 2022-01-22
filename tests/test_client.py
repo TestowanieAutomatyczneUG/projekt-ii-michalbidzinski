@@ -110,3 +110,8 @@ class TestMainClient(unittest.TestCase):
         get_mock.return_value.status_code = 404
         response = self.client.get_client_info('2')
         self.assertEqual(response, 'Such a client does not exists')
+    @patch.object(requests, 'get')
+    def test_get_client_server_error(self, get_mock):
+        get_mock.return_value.status_code = 400
+        response = self.client.get_client_info('2')
+        self.assertEqual(response, 'Server error')
