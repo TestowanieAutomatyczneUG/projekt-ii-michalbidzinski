@@ -131,3 +131,7 @@ class TestMainClient(unittest.TestCase):
     def test_get_client_info_invalid_id_obj(self):
         assert_that(self.client.get_client_info).raises(
             TypeError).when_called_with({})
+    def test_get_client_info_connection_error(self):
+        self.client.get_client = Mock(side_effect=ConnectionError)
+        assert_that(self.client.get_client).raises(
+            ConnectionError).when_called_with('3')
