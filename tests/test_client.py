@@ -116,6 +116,18 @@ class TestMainClient(unittest.TestCase):
         response = self.client.get_client_info('2')
         self.assertEqual(response, 'Server error')
 
+    def test_get_client_info_invalid_id_int(self):
+        assert_that(self.client.get_client_info).raises(
+            TypeError).when_called_with(5)
+
     def test_get_client_info_invalid_id_float(self):
         assert_that(self.client.get_client_info).raises(
             TypeError).when_called_with(5.3)
+
+    def test_get_client_info_invalid_id_arr(self):
+        assert_that(self.client.get_client_info).raises(
+            TypeError).when_called_with([])
+
+    def test_get_client_info_invalid_id_obj(self):
+        assert_that(self.client.get_client_info).raises(
+            TypeError).when_called_with({})
