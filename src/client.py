@@ -1,6 +1,7 @@
 import requests
 class Client:
     def __init__(self):
+        self.url = "https://client.pl/"
         self.create = "https://client.pl/add"
         self.read = "https:/client.pl/get"
         self.update = "https:/client.pl/update"
@@ -46,3 +47,7 @@ class Client:
             return 'Such a client does not exists'
         else:
             return 'Server error'
+
+    def get_all_clients(self):
+        response = requests.get(self.url)
+        return response.json
