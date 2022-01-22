@@ -165,3 +165,18 @@ class TestMainClient(unittest.TestCase):
     def test_update_user_eror_with_wrong_id(self):
         assert_that(self.temp.update_users).raises(ValueError).when_called_with(11.23, 'pepsi',
                                                                                      'cola', '23@example.com', '2001')
+    def test_update_user_eror_with_wrong_name(self):
+        assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', [],
+                                                                                     'cola', '23@example.com', '2001')
+
+    def test_update_user_eror_with_wrong_surname(self):
+        assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', 'pepsi',
+                                                                                12, '23@example.com', '2001')
+
+    def test_update_user_eror_with_wrong_email(self):
+        assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', 'pepsi',
+                                                                                'cola', 3.3, '2001')
+
+    def test_update_user_eror_with_wrong_born_year(self):
+        assert_that(self.temp.update_users).raises(ValueError).when_called_with('11', 'pepsi',
+                                                                                'cola',"23213@example.com", 2001)
