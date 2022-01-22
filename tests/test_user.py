@@ -161,3 +161,7 @@ class TestMainClient(unittest.TestCase):
               }])
         response = self.temp.get_all_users()
         self.assertEqual(response[1], {'email': 'mich@gmail.com', 'id': '2', 'name': 'Jarek', 'surname': 'Pasha', 'born': '2001'})
+
+    def test_update_user_eror_with_wrong_id(self):
+        assert_that(self.temp.update_users).raises(ValueError).when_called_with(11.23, 'pepsi',
+                                                                                     'cola', '23@example.com', '2001')
