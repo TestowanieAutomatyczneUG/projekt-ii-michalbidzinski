@@ -244,6 +244,11 @@ class TestMainUser(unittest.TestCase):
         self.temp.add_user('1', 'mk', 'lqq', 'example@com.pl', '2001')
         post_mock.assert_called_once()
 
+    @patch('src.user.requests.get')
+    def test_get_non_existing_user_(self, get_mock):
+        request_mock(get_mock, FakeMock(404))
+        response = self.temp.get_user_info('3')
+        self.assertEqual(response, 'Such a client does not exists')
 
 
 
@@ -257,7 +262,7 @@ class TestMainUser(unittest.TestCase):
 
 
 
-        
+
 class FakeMock(object):
     def __init__(self, status_code, json=None):
         self.status_code = status_code
