@@ -110,6 +110,7 @@ class TestMainClient(unittest.TestCase):
         get_mock.return_value.status_code = 404
         response = self.client.get_client_info('2')
         self.assertEqual(response, 'Such a client does not exists')
+
     @patch.object(requests, 'get')
     def test_get_client_info_server_error(self, get_mock):
         get_mock.return_value.status_code = 400
@@ -131,7 +132,30 @@ class TestMainClient(unittest.TestCase):
     def test_get_client_info_invalid_id_obj(self):
         assert_that(self.client.get_client_info).raises(
             TypeError).when_called_with({})
+
     def test_get_client_info_connection_error(self):
         self.client.get_client = Mock(side_effect=ConnectionError)
         assert_that(self.client.get_client).raises(
             ConnectionError).when_called_with('3')
+
+    def test_get_all_clients(self):
+        self.client.get_all_clients = Mock()
+        self.client.get_all_clients.return_value = (
+            [{'id': '1',
+                'firstname':
+                  'Michal',
+              'surname':
+                  'Bidzinski',
+              'email':
+                  'michalbidzinski@gmail.com',
+              },
+             {'id': '2',
+                 'name':
+                  'Jarek',
+              'surname':
+                  'Pasha',
+              'email':
+                  'mich@gmail.com',
+              }])
+        response = self.client.get_all_clients()
+        self.assertEqual(response[1], {'email': 'mich@gmail.com', 'id': '2', 'name': 'Jarek', 'surname': 'Pasha'})

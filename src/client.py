@@ -50,4 +50,4 @@ class Client:
 
     def get_all_clients(self):
         response = requests.get(self.url)
-        return response.json
+        return response
