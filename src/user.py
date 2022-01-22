@@ -1,4 +1,6 @@
 import requests
+
+
 class User:
     def __init__(self):
         self.url = "https://fakestoreapi.com/"
@@ -6,7 +8,8 @@ class User:
         self.read = "https://fakestoreapi.com/get"
         self.update = "https://fakestoreapi.com/update"
         self.delete = "https://fakestoreapi.com/delete"
-    def add_user(self,id, firstname, surname, email,born):
+
+    def add_user(self, id, firstname, surname, email, born):
         if type(id) is not str:
             raise ValueError("id is not an str")
         if type(firstname) is not str:
@@ -18,12 +21,12 @@ class User:
         if type(born) is not str:
             raise ValueError("born year is not a string")
         response = requests.post(self.create,
-                                 data={'id': id ,'firstname': firstname, 'surname': surname, 'email': email,
+                                 data={'id': id, 'firstname': firstname, 'surname': surname, 'email': email,
                                        'born': born})
         if 200 <= response.status_code <= 299:
             return response.json
         if response.status_code == 400:
-            return 'Client of this id already exists'
+            return 'user of this id already exists'
         else:
             return 'Server error'
 
@@ -34,9 +37,10 @@ class User:
         if 200 <= response.status_code <= 299:
             return response.json
         if response.status_code == 404:
-            return 'Such a client does not exists'
+            return 'Such a user does not exists'
         else:
             return 'Server error'
+
     def get_user_info(self, id):
         if type(id) is not str:
             raise TypeError('id is not a str')
@@ -44,7 +48,7 @@ class User:
         if 200 <= response.status_code <= 299:
             return response.json
         if response.status_code == 404:
-            return 'Such a client does not exists'
+            return 'Such a user does not exists'
         else:
             return 'Server error'
 
@@ -52,7 +56,7 @@ class User:
         response = requests.get(self.url)
         return response
 
-    def update_users(self, id, firstname, surname, email,born):
+    def update_users(self, id, firstname, surname, email, born):
         if type(id) is not str:
             raise ValueError("id is not an str")
         if type(firstname) is not str:
@@ -64,7 +68,7 @@ class User:
         if type(born) is not str:
             raise ValueError("born year is not a string")
         response = requests.put(self.update + '/' + id,
-                                data={ 'firstname': firstname, 'surname': surname, 'email': email,
+                                data={'firstname': firstname, 'surname': surname, 'email': email,
                                       'born': born})
         if 200 <= response.status_code <= 299:
             return response.json

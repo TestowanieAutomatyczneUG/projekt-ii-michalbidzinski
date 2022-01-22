@@ -3,11 +3,12 @@ import requests
 from assertpy import *
 from unittest.mock import *
 from src.user import User
-import json
+
 
 def request_mock(mockk, response):
     mockk.return_value = Mock(ok=True)
     mockk.return_value = response
+
 
 class TestMainUser(unittest.TestCase):
     def setUp(self):
@@ -30,19 +31,19 @@ class TestMainUser(unittest.TestCase):
     def test_add_user_existing_eror(self, post_mock):
         post_mock.return_value.status_code = 400
         assert_that(self.temp.add_user("1", "Michal", "Bidz", "mbidz@example.com",
-                                       "2001")).contains("Client of this id already exists")
+                                       "2001")).contains("user of this id already exists")
 
     @patch.object(requests, 'post', autospec=True)
     def test_add_user_existing_eror_autospec(self, post_mock):
         post_mock.return_value.status_code = 400
         assert_that(self.temp.add_user("1", "Michal", "Bidz", "mbidz@example.com",
-                                       "2001")).is_equal_to_ignoring_case("CLIENT OF THIS ID ALREADY EXISTS")
+                                       "2001")).is_equal_to_ignoring_case("user OF THIS ID ALREADY EXISTS")
 
     def test_add_user_existing_eror2(self):
         with patch.object(requests, 'post') as post_mock:
             post_mock.return_value.status_code = 400
             assert_that(self.temp.add_user("1", "Michal", "Bidz", "mbidz@example.com",
-                                           "2001")).is_equal_to("Client of this id already exists")
+                                           "2001")).is_equal_to("user of this id already exists")
 
     def test_add_new_usert_int(self):
         assert_that(self.temp.add_user).raises(ValueError).when_called_with(1, 2, 3, 4, 5)
@@ -117,7 +118,7 @@ class TestMainUser(unittest.TestCase):
     def test_get_user_info_which_does_not_exisit_in_database(self, get_mock):
         get_mock.return_value.status_code = 404
         response = self.temp.get_user_info('2')
-        self.assertEqual(response, 'Such a client does not exists')
+        self.assertEqual(response, 'Such a user does not exists')
 
     @patch.object(requests, 'get')
     def test_get_user_info_server_error(self, get_mock):
@@ -212,13 +213,13 @@ class TestMainUser(unittest.TestCase):
     @patch('src.user.requests.put')
     def test_update_user_mock(self, put_mock):
         request_mock(put_mock, FakeMock(200, {'id': 1}))
-        self.temp.update_users( '2', 'mk', 'lqq', 'example@com.pl', '2001')
+        self.temp.update_users('2', 'mk', 'lqq', 'example@com.pl', '2001')
         put_mock.assert_called_once()
 
     @patch('src.user.requests.put')
     def test_update_user_21(self, put_mock):
         request_mock(put_mock, FakeMock(200, {'id': '1'}))
-        response = self.temp.update_users( '1', 'mk', 'lqq', 'example@com.pl', '2001')
+        response = self.temp.update_users('1', 'mk', 'lqq', 'example@com.pl', '2001')
         assert_that(response['id']).is_equal_to('1')
 
     @patch('src.user.requests.put')
@@ -232,6 +233,7 @@ class TestMainUser(unittest.TestCase):
         request_mock(put_mock, FakeMock(404))
         self.temp.update_users('1', 'mk', 'lqq', 'example@com.pl', '2001')
         put_mock.assert_called_once()
+
     @patch('src.user.requests.put')
     def test_update_user_error_3(self, put_mock):
         request_mock(put_mock, FakeMock(521))
@@ -248,24 +250,13 @@ class TestMainUser(unittest.TestCase):
     def test_get_non_existing_user_(self, get_mock):
         request_mock(get_mock, FakeMock(404))
         response = self.temp.get_user_info('3')
-        self.assertEqual(response, 'Such a client does not exists')
+        self.assertEqual(response, 'Such a user does not exists')
 
     @patch('src.user.requests.delete')
     def test_delete_existing_user_fake_mock(self, delete_mock):
         request_mock(delete_mock, FakeMock(200, {'id': '1'}))
         self.temp.delete_user('1')
         delete_mock.assert_called_once()
-
-
-
-
-
-
-
-
-
-
-
 
 
 class FakeMock(object):
